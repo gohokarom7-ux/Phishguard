@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard — Detect. Analyze. Protect.</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background grid -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="shield-wrap" aria-hidden="true">
+          <svg class="shield-icon" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 2L4 10V28C4 39.05 12.8 49.4 24 52C35.2 49.4 44 39.05 44 28V10L24 2Z"
+              stroke="var(--cyan)" stroke-width="2.5" fill="none"/>
+            <path d="M24 2L4 10V28C4 39.05 12.8 49.4 24 52C35.2 49.4 44 39.05 44 28V10L24 2Z"
+              fill="var(--cyan)" fill-opacity="0.06"/>
+            <path d="M16 27L22 33L32 21" stroke="var(--cyan)" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="shield-pulse" aria-hidden="true"></div>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">PhishGuard</span>
+          <span class="brand-tag">Detect. Analyze. Protect.</span>
+        </div>
+      </div>
+      <nav class="header-badges" aria-label="System status">
+        <span class="badge badge--green">
+          <span class="dot"></span>System Online
+        </span>
+        <span class="badge badge--blue">AI Engine v3.1</span>
+        <span class="badge badge--outline">Threat DB: Current</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-container">
+
+    <!-- Analyzer -->
+    <section class="analyzer-section" aria-label="Email analyzer">
+      <div class="section-label" aria-hidden="true">// THREAT ANALYSIS ENGINE</div>
+      <div class="analyzer-card glass-card">
+
+        <div class="textarea-wrap">
+          <label for="emailInput" class="sr-only">Paste suspicious email content</label>
+          <div class="scan-line" id="scanLine" aria-hidden="true"></div>
+          <textarea
+            id="emailInput"
+            class="email-input"
+            placeholder="Paste suspicious email here..."
+            spellcheck="false"
+            rows="10"
+          ></textarea>
+          <div class="textarea-corner tl" aria-hidden="true"></div>
+          <div class="textarea-corner tr" aria-hidden="true"></div>
+          <div class="textarea-corner bl" aria-hidden="true"></div>
+          <div class="textarea-corner br" aria-hidden="true"></div>
+        </div>
+
+        <div class="analyzer-footer">
+          <div class="char-count" id="charCount" aria-live="polite">0 characters</div>
+          <button class="analyze-btn" id="analyzeBtn" onclick="analyzeEmail()">
+            <svg class="btn-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M15 15L19 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M9 6V12M6 9H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Analyze Email
+          </button>
+          <button class="clear-btn" id="clearBtn" onclick="clearAll()">Clear</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== RESULTS (hidden until analysis) ===== -->
+    <section class="results-section" id="resultsSection" aria-live="polite" aria-label="Analysis results">
+
+      <!-- Top row: score + status -->
+      <div class="results-top">
+
+        <!-- Risk Score -->
+        <div class="glass-card score-card" id="scoreCard">
+          <div class="card-eyebrow">Overall Risk Score</div>
+          <div class="score-display">
+            <span class="score-number" id="scoreNumber">0</span>
+            <span class="score-denom">/100</span>
+          </div>
+          <div class="risk-bar-wrap" role="progressbar" id="riskBarWrap" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="risk-bar-track">
+              <div class="risk-bar-fill" id="riskBarFill"></div>
+            </div>
+            <div class="risk-bar-labels" aria-hidden="true">
+              <span>Safe</span><span>Suspicious</span><span>Phishing</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verdict -->
+        <div class="glass-card verdict-card" id="verdictCard">
+          <div class="card-eyebrow">Security Status</div>
+          <div class="verdict-badge" id="verdictBadge">
+            <span class="verdict-icon" id="verdictIcon" aria-hidden="true"></span>
+            <span class="verdict-label" id="verdictLabel">—</span>
+          </div>
+          <p class="verdict-desc" id="verdictDesc"></p>
+          <div class="verdict-indicators" id="verdictIndicators"></div>
+        </div>
+
+      </div>
+
+      <!-- Analysis Categories -->
+      <div class="section-label" aria-hidden="true">// ANALYSIS BREAKDOWN</div>
+      <div class="analysis-grid">
+
+        <!-- Content Analysis -->
+        <div class="glass-card analysis-card" id="contentCard">
+          <div class="analysis-header">
+            <div class="analysis-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h12M4 14h8M4 18h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="analysis-title">Content Analysis</div>
+              <div class="analysis-risk-label" id="contentRisk">—</div>
+            </div>
+          </div>
+          <ul class="analysis-checks" id="contentChecks" aria-label="Content checks"></ul>
+        </div>
+
+        <!-- Link Analysis -->
+        <div class="glass-card analysis-card" id="linkCard">
+          <div class="analysis-header">
+            <div class="analysis-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07L11.75 5.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="analysis-title">Link Analysis</div>
+              <div class="analysis-risk-label" id="linkRisk">—</div>
+            </div>
+          </div>
+          <ul class="analysis-checks" id="linkChecks" aria-label="Link checks"></ul>
+        </div>
+
+        <!-- Sender Analysis -->
+        <div class="glass-card analysis-card" id="senderCard">
+          <div class="analysis-header">
+            <div class="analysis-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <div class="analysis-title">Sender Analysis</div>
+              <div class="analysis-risk-label" id="senderRisk">—</div>
+            </div>
+          </div>
+          <ul class="analysis-checks" id="senderChecks" aria-label="Sender checks"></ul>
+        </div>
+
+      </div>
+
+      <!-- Recommendations -->
+      <div class="section-label" aria-hidden="true">// RECOMMENDED ACTIONS</div>
+      <div class="glass-card reco-card">
+        <ul class="reco-list" id="recoList" aria-label="Security recommendations"></ul>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <span>PhishGuard &copy; 2025 — AI-Powered Threat Intelligence</span>
+    <span class="footer-sep" aria-hidden="true">|</span>
+    <span>For demonstration purposes only</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
